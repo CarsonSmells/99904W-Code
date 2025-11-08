@@ -1,17 +1,17 @@
 #include "vex.h"
 #include "robotConfig.h"
 #include "autos.h"
+#include <cmath>
 
 int intakeJamTask(void* args) {
     static bool intakeJammed = false;
     uint32_t lastJamTime = 0;
-    const uint32_t jamReverseDuration = 200; // ms to reverse to clear jam
-    const uint32_t jamDetectCooldown = 350; // ms between jam checks
+    const uint32_t jamReverseDuration = 500; // ms to reverse to clear jam
+    const uint32_t jamDetectCooldown = 600; // ms between jam checks
 
     while (true) {
         // Only check for jams after 200ms of running
-        if (!intakeJammed && (intakebottom.velocity(vex::velocityUnits::pct) <= 7.5 && Brain.timer(msec) - lastJamTime > jamDetectCooldown
-           && intakebottom.direction() == vex::directionType::fwd)) {
+        if (!intakeJammed && (Brain.timer(msec) - lastJamTime > jamDetectCooldown) && !OpticalSensor.isNearObject() && std::abs(intakebottom.velocity(vex::velocityUnits::pct)) <= 4) {
             intakeJammed = true;
             lastJamTime = Brain.timer(msec);
         }   
@@ -107,7 +107,7 @@ vex::color colorsortcolor;
 void autosTest(){
   vex::task antiJamThread(intakeJamTask, nullptr);
   vex::task colorSortThread(colorSortTask, nullptr);
-
+  intake.spin(fwd,100,pct);
 
   
   wait(15, sec);
@@ -147,13 +147,14 @@ void autorightseven(){
   fireDropdownDelayed(650, 1250); // Drop after 0.75 seconds, pullback after 1 second
   intake.spin(forward, 100, percent);
   Drive.swing(42.25, 100, 40, 1.6);
-  Drive.turn(57, 100, .7);
-  Drive.moveDistance(31.2, 45, 1.2, true);
-  Drive.swing(-22, 80, 0, 2);
-  Drive.turn(135, 100, .7);
+  Drive.turn(58, 100, .7);
+  fireDropdownDelayed(1000,850);
+  Drive.moveDistance(28, 30, 1.2, true);
+  Drive.swing(-22, 78, 0, 1.5);
+  Drive.turn(133, 100, .7);
   fireDropdownDelayed(500, 10000000);
-  Drive.swing(42.25, 75, 180, 1.75);
-  Drive.moveDistance(10, 75, 1.5, true);
+  Drive.swing(44.25, 80, 180, 1.75);
+  Drive.moveDistance(10, 55, 1.5, true);
   Drive.turn(180, 100, .35);
   intake.stop();
   Drive.moveDistance(-25, 100, .8, true);
@@ -222,21 +223,21 @@ void autoleftsimple(){
   fireDropdownDelayed(650, 100000000); // Drop after 0.75 seconds, pullback after 10 seconds
   intake.spin(forward, 100, percent);
   Drive.swing(40, 100, -45, 1.5);
-  Drive.turn(-135, 100, 1);
+  Drive.turn(-135, 80, 1);
   Drive.moveDistance(-21, 30, 1.2, true);
   intake.spin(reverse, 100, percent);
   wait(.2, sec);
-  intakebottom.spin(forward, 100, percent);
+  intakebottom.spin(reverse, 50, percent);
   intaketop.spin(forward, 70, percent);
   intakescoring.spin(reverse, 100, percent);
-  wait(.5, sec);
+  wait(.7, sec);
   intake.spin(fwd, 100, percent);
   Drive.turn(-125, 100, 1);
-  Drive.swing(60.5, 75, -180, 2);
+  Drive.swing(60.5, 70, -180, 2);
   Drive.moveDistance(10, 75, 3, true);
-  Drive.turn(-180, 100, .35);
+  Drive.turn(-180, 100, .4);
   intake.stop();
-  Drive.moveDistance(-26.5, 80, .8, true);
+  Drive.moveDistance(-26.3, 80, .8, true);
   wing1.set(false); // Retract wings
   wing2.set(false);
   fireIntakeDelayed(100) ; // intake after 0.1 seconds

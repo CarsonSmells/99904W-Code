@@ -153,13 +153,13 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
+  autorightseven();
+  autorightcomplex();
+  autosTest();
   autoleftsimple();
   autorightsimple();
   autosSkills();
-  autorightseven();
-  autorightcomplex();
   autoleftcomplex();
-  autosTest();
   //^^auton selector (put the code u wanna run up top.)
 }
 
@@ -175,10 +175,10 @@ void usercontrol(void) {
   const uint32_t jamDetectCooldown = 1000; // ms between jam checks
 
   bool colorsortingEnabled = true;
-  uint32_t lastColorSortTime = 0;
+  uint32_t lastColorSortTime = 0; 
   const uint32_t colorSortCooldown = 100; // ms between color sort triggers
 
-  vex::color colorsortcolor = vex::color::red; // Change color here ####################################################
+  vex::color colorsortcolor = vex::color::blue; // Change color here ####################################################
   uint32_t intakeStartTime = 0;
   bool lastIntakePressed = false;
 
