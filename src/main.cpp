@@ -6,6 +6,12 @@
 /*    Description:  V5 project                                                */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
+//HOW TO COMMIT:
+
+// first: git add .   
+// second: git commit -m "title"
+//third: git push
+//bleh
 
 #include "vex.h"
 #include "robotConfig.h"
