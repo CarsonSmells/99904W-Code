@@ -22,7 +22,7 @@ extern vex::motor intaketop;
 extern vex::motor intakescoring;
 // pneumatics
 extern vex::pneumatics wing1;
-extern vex::pneumatics wing2;
+extern vex::pneumatics hood;
 extern vex::pneumatics parkmech;
 extern vex::pneumatics lilwillpiston;
 extern vex::pneumatics colorsortpiston;
@@ -32,9 +32,13 @@ extern vex::pneumatics colorsortpiston;
  */
 extern vex::inertial Inertial;
 extern vex::distance distanceSensor;
+extern vex::distance LeftDis;
+extern vex::distance FrontDis;
+extern vex::distance RightDis;
 
 // vision
-extern vex::optical OpticalSensor;
+extern vex::optical LowerOpticalSensor;
+extern vex::optical TopOpticalSensor;
 
 
 
@@ -43,6 +47,7 @@ extern vex::optical OpticalSensor;
 //**************************//
 extern vex::motor_group leftdrive;
 extern vex::motor_group rightdrive;
+extern vex::motor_group bottomintake;
 extern drivetrainObj Drive;
 
 extern vex::motor_group intake;

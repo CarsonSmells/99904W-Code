@@ -1,13 +1,17 @@
 #pragma once
 
 extern vex::color colorsortcolor;
-void autosTest();
+void solosig();
 void autorightcomplex();
-void autorightseven();
-void autoleftcomplex();
+void autorightnine();
+void autorighthook();
+void autolefthook();
 void autorightsimple();
 void autoleftsimple();
 void autosSkills();
+void autostest();
+void autoleftfinals();
+void autorightfinals();
 
 struct DropdownPullbackArgs {
     int dropdownWait;

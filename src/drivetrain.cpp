@@ -49,7 +49,7 @@ void drivetrainObj::setBrakeType(vex::brakeType brakeType)
 void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double timeout, bool correctHeading)
 {
     // initalize objects for PID control
-    MiniPID distanceControl(1200, 5, 3000);
+    MiniPID distanceControl(1500, 15, 5640);
     MiniPID headingControl(300, 3, 1200);
     // configure pid controls
     distanceControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
@@ -140,7 +140,7 @@ void drivetrainObj::swing(double targetDistance, double maxSpeed, double targetA
 void drivetrainObj::turn(double targetAngle, double maxSpeed, double timeout)
 {
     // initalize object for PID control
-    MiniPID angleControl(375, 20, 3000);
+    MiniPID angleControl(300, 2.5, 2500); //350,20,3000
     // configure PID controller
     angleControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
     angleControl.setMaxIOutput(0);
