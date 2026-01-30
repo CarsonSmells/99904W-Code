@@ -46,32 +46,30 @@ void drivetrainObj::setBrakeType(vex::brakeType brakeType)
     rightdrive.setStopping(brakeType);
 }
 
-void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double timeout, bool correctHeading)
+void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double timeout, bool correctHeading, bool autoskip)
 {
-    // initalize objects for PID control
+    // initialize PID objects
     MiniPID distanceControl(1500, 15, 5640);
     MiniPID headingControl(300, 3, 1200);
-    // configure pid controls
     distanceControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
     headingControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
 
-    // track inital values to use for calculating total change
+    // initial values
     double startPos = getDriveEncoderValue();
     double startAngle = Inertial.rotation(deg);
     double startTime = vex::timer::system();
 
-    // condition exits loops after some amount of time has passed
+    int stableCount = 0;               // counts consecutive iterations within threshold
+    const int stableThreshold = 5;     // number of iterations to consider "stable"
+    const double distanceTolerance = 0.1; // inches
+
     while (vex::timer::system() - startTime <= timeout * 1000)
     {
-        // calculate the total distance the encoder has traveled in degrees
         double encoderDistance = getDriveEncoderValue() - startPos;
-        // converts the encoder distance to inches traveled
         double travelDistance = angularDistanceToLinearDistance(encoderDistance, wheelDiameter, gearRatio);
-        // stores the current heading of the robot
         double actualAngle = Inertial.rotation(deg);
-        // gets ouptput from pid controller for travel speed
+
         double output = distanceControl.getOutput(travelDistance, targetDistance);
-        // gets output from pid controller for turning speed
         double correctionFactor = headingControl.getOutput(actualAngle, startAngle);
 
         if (correctHeading)
@@ -84,16 +82,44 @@ void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double 
             runLeftSide(output);
             runRightSide(output);
         }
-        wait(20, msec);
+
+        // --- Auto-stop / override logic ---
+        if (autoskip)
+        {
+            if (fabs(travelDistance - targetDistance) <= distanceTolerance)
+            {
+                stableCount++;
+            }
+            else
+            {
+                stableCount = 0; // reset counter if outside tolerance
+            }
+
+            if (stableCount >= stableThreshold)
+            {
+                break; // distance is stable, exit loop early
+            }
+        }
+
+        wait(20, msec); // loop delay
     }
+
+    // stop motors
     stopLeftSide(vex::brakeType::coast);
     stopRightSide(vex::brakeType::coast);
 }
 
+void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double timeout, bool correctHeading)
+{
+    moveDistance(targetDistance, maxSpeed, timeout, correctHeading, false);
+}
+
 void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double timeout)
 {
-    moveDistance(targetDistance, maxSpeed, timeout, true);
+    moveDistance(targetDistance, maxSpeed, timeout, false, false);
 }
+
+
 
 void drivetrainObj::swing(double targetDistance, double maxSpeed, double targetAngle, double timeout)
 {

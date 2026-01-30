@@ -625,7 +625,8 @@ void autosSkills(){
 };
 
 void autostest(){
-
+  Drive.moveDistance(36,100,100,true,true);
+  Drive.turn(90,100,10);
 
 wait (10000,sec);
 }

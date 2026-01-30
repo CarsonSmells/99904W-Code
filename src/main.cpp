@@ -156,13 +156,13 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
+  autostest();
   autoleftfinals();
   autorighthook(); //done tested (cm)
   autolefthook(); //done tested (CM)
   autorightsimple();
   solosig();
   autoleftsimple();
-  autostest();
   autorightcomplex();
   autosSkills();
   autorightnine();
