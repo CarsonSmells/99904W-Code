@@ -71,7 +71,6 @@ void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double 
 
         double output = distanceControl.getOutput(travelDistance, targetDistance);
         double correctionFactor = headingControl.getOutput(actualAngle, startAngle);
-        printf("Target: %.2f, Actual: %.2f, Output: %.2f\n", targetDistance, travelDistance, output);
 
         if (correctHeading)
         {
