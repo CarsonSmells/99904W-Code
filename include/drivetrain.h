@@ -81,7 +81,9 @@ class drivetrainObj
          * @param maxSpeed The maximum speed to use. (pct 0-100)
          * @param timeout The maximum time to allow for the turn. (seconds)
          */
+        void turn(double targetAngle, double maxSpeed, double timeout, bool autoskip);
         void turn(double targetAngle, double maxSpeed, double timeout);
+
 
     private:
         /**

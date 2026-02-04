@@ -49,7 +49,7 @@ void drivetrainObj::setBrakeType(vex::brakeType brakeType)
 void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double timeout, bool correctHeading, bool autoskip)
 {
     // initialize PID objects
-    MiniPID distanceControl(1500, 15, 5640);
+    MiniPID distanceControl(2300, 0, 5800); 
     MiniPID headingControl(300, 3, 1200);
     distanceControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
     headingControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
@@ -61,7 +61,7 @@ void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double 
 
     int stableCount = 0;               // counts consecutive iterations within threshold
     const int stableThreshold = 5;     // number of iterations to consider "stable"
-    const double distanceTolerance = 0.1; // inches
+    const double distanceTolerance = 0.2; // inches
 
     while (vex::timer::system() - startTime <= timeout * 1000)
     {
@@ -71,6 +71,7 @@ void drivetrainObj::moveDistance(double targetDistance, double maxSpeed, double 
 
         double output = distanceControl.getOutput(travelDistance, targetDistance);
         double correctionFactor = headingControl.getOutput(actualAngle, startAngle);
+        printf("Target: %.2f, Actual: %.2f, Output: %.2f\n", targetDistance, travelDistance, output);
 
         if (correctHeading)
         {
@@ -163,15 +164,19 @@ void drivetrainObj::swing(double targetDistance, double maxSpeed, double targetA
     stopRightSide(vex::brakeType::coast);
 }
 
-void drivetrainObj::turn(double targetAngle, double maxSpeed, double timeout)
+void drivetrainObj::turn(double targetAngle, double maxSpeed, double timeout, bool autoskip)
 {
     // initalize object for PID control
-    MiniPID angleControl(300, 2.5, 2500); //350,20,3000
+    MiniPID angleControl(350, 8.5, 1700);  
     // configure PID controller
+    // Re-enable I and D
     angleControl.setOutputLimits(-120 * maxSpeed, 120 * maxSpeed);
     angleControl.setMaxIOutput(0);
     // store the inital time
     double startTime = vex::timer::system();
+    int stableCount = 0;               // counts consecutive iterations within threshold
+    const int stableThreshold = 5;     // number of iterations to consider "stable"
+    const double rotationTolerance = .75; // degrees
 
     // condition exits loops after some amount of time has passed
     while (vex::timer::system() - startTime <= timeout * 1000)
@@ -180,20 +185,47 @@ void drivetrainObj::turn(double targetAngle, double maxSpeed, double timeout)
         double actualAngle = Inertial.rotation(deg);
         // gets output from PID controller for desired turn spped
         double output = angleControl.getOutput(actualAngle, targetAngle);
-
         // only introduce the integral portion of the PID if the robot is within 5 degrees of the target
         // this helps to prevent overshoot and integral windup
-        if (fabs(targetAngle - actualAngle) < 5)
+        if (fabs(actualAngle - targetAngle) < 5)
         {
-            angleControl.setMaxIOutput(2000);
+            angleControl.setMaxIOutput(85 * maxSpeed);
+        }
+        else
+        {
+            angleControl.setMaxIOutput(0);
         }
         // set the motors to the desired speed
         runLeftSide(output);
         runRightSide(-output);
-        wait(10, msec);
+
+        if (autoskip)
+        {
+            if (fabs(actualAngle - targetAngle) <= rotationTolerance)
+            {
+                stableCount++;
+            }
+            else
+            {
+                stableCount = 0; // reset counter if outside tolerance
+            }
+
+            if (stableCount >= stableThreshold)
+            {
+                break; // rotation is stable, exit loop early
+            }
+        }
+
+        wait(20, msec);
+
     }
     stopLeftSide(vex::brakeType::coast);
     stopRightSide(vex::brakeType::coast);
+}
+
+void drivetrainObj::turn(double targetAngle, double maxSpeed, double timeout)
+{
+    turn(targetAngle, maxSpeed, timeout, false);
 }
 
 //*****************//

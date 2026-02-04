@@ -156,6 +156,7 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
+  autosSkills();
   autostest();
   autoleftfinals();
   autorighthook(); //done tested (cm)
@@ -164,7 +165,6 @@ void autonomous(void) {
   solosig();
   autoleftsimple();
   autorightcomplex();
-  autosSkills();
   autorightnine();
  
   //^^auton selector (put the code u wanna run up top.)
@@ -288,7 +288,7 @@ void usercontrol(void) {
 
           } else {
             // Object detected → delayed slow
-            if (slowTimer.time(msec) <= 120 and !myTaskActive) {
+            if (slowTimer.time(msec) <= 85 and !myTaskActive) {
               intakescoring.spin(fwd, 100, pct);
             } else {
               intakescoring.spin(fwd, .001, pct);
