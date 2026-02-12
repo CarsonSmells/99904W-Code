@@ -111,8 +111,10 @@ int delayedDropdownTask(void* argsPtr) {
 
 int balltopscoring() {
   intakescoring.spin(fwd, 100, pct);
-  waitUntil(TopOpticalSensor.isNearObject() || hood.value());
-  wait(125,msec);
+  if (!TopOpticalSensor.isNearObject()) {
+    waitUntil(TopOpticalSensor.isNearObject() || hood.value());
+    wait(100,msec);
+  }
   intakescoring.stop();
   return 0;
 }
@@ -150,62 +152,63 @@ vex::color colorsortcolor;
 
 void solosig(){
   vex::task colorSortThread(colorSortTask, nullptr);
-  wing1.set(true);
-  fireDropdownDelayed(600,2300);
-  Drive.moveDistance(31.5,100,.9);
+  hook.set(true);
+  fireDropdownDelayed(650,2300);
+  Drive.moveDistance(32,100,1.2,true,true);
   //could cut (cut .2)
-  Drive.turn(90,80,.6);
-   bottomintake.spin(fwd,100,pct);
-  Drive.moveDistance(18.1,50,.65,true);
-  Drive.turn(93,100,.5);
-  bottomintake.spin(fwd,70,pct);
+  Drive.turn(90,100,.7,true);
+  loadball();
+  bottomintake.spin(fwd,100,pct);
+  Drive.moveDistance(18.25,50,.6,true);
+  Drive.turn(90.5,100,.4);
+  bottomintake.spin(fwd,60,pct);
   intakescoring.stop();
   hood.set(true);
   fireIntakeDelayed(400);
-  Drive.moveDistance(-90,85,1.65,true);
+  Drive.moveDistance(-35,85,1,true,true);
+  wait(.65,sec);
   intake.stop();
   hood.set(false);
   bottomintake.spin(fwd,100,pct);
-  Drive.turn(190,100,.9);
+  Drive.turn(186,100,.9,true);
+  loadball();
   fireDropdownDelayed(950,1600);
-  Drive.swing(59.85,90,170,1.8);
+  Drive.swing(60,85,170,1.8);
   intakescoring.stop();
   // Drive.moveDistance(20.1,100,.8,true);
   // Drive.turn(176,85,.4);
   // intakescoring.stop();
   // Drive.moveDistance(39.5,100,1.35,true);
   Drive.turn(133,100,.7);
-  intakescoring.spin(reverse, 18, percent);
-  bottomintake.spin(reverse,30,pct);
-  Drive.moveDistance(-19.3,80,.4,true);
-  intakescoring.spin(reverse, 95, percent);
+  bottomintake.spin(reverse,25,pct);
+  intakescoring.spin(reverse, 30, percent);
+  Drive.moveDistance(-19.35,80,.4,true,true);
+  intakescoring.spin(reverse, 100, percent);
   bottomintake.spin(fwd,80,pct);
-  Drive.turn(135, 80, 1.1);
+  Drive.turn(135, 80, .7);
   bottomintake.stop();
-  wait(.2,sec);
-  hood.set(true);
-  bottomintake.spin(fwd,30,pct);
-  fireDropdownDelayed(700,2000);
-  intakescoring.stop();
-  Drive.moveDistance(50, 100, 1.25, true);
-  hood.set(false);
-  Drive.turn(90,80,.65);
+  wait(.4,sec);
+  loadball();
+  fireDropdownDelayed(500,2250);
+  bottomintake.spin(reverse,10,pct);
+  Drive.moveDistance(52, 80, 1.25, true, true);
+  Drive.turn(90,100,.65,true);
   bottomintake.spin(fwd,100,pct);
-  intakescoring.spin(fwd,10,pct);
-  Drive.moveDistance(67, 60, 1, true);
+  Drive.moveDistance(67, 60, .7, true);
   intakescoring.stop();
-  bottomintake.spin(fwd,70,pct);
-  Drive.turn(89,100,.35);
+  bottomintake.spin(fwd,50,pct);
+  Drive.turn(89.5,100,.35);
   hood.set(true);
-  fireIntakeDelayed(375);
-  Drive.moveDistance(-70,90,1.65);
+  fireIntakeDelayed(450);
+  Drive.moveDistance(-45,80,1,true,true);
+  wait(.5,sec);
 
 //Amninder and Argamond Were here frfr sigma
   wait(15, sec);
  };
 
 void autorightcomplex(){
-  wing1.set(true);
+  hook.set(true);
   Drive.moveDistance(43.9,85,1.2,true);
   bottomintake.spin(fwd,100,pct);
   lilwillpiston.set(true);
@@ -223,7 +226,7 @@ void autorightcomplex(){
   lilwillpiston.set(false);
   intake.stop();
   hood.set(false);
-  wing1.set(false);
+  hook.set(false);
   Drive.turn(145,100,.5);
   Drive.moveDistance(11,80,.7);
   Drive.turn(90,85,.5);
@@ -258,7 +261,7 @@ void autorightnine(){
 
 void autolefthook(){
   vex::task colorSortThread(colorSortTask, nullptr);
-  wing1.set(true);
+  hook.set(true);
   fireDropdownDelayed(635, 1000); // Drop after 0.75 seconds, pullback after 10 seconds
   bottomintake.spin(forward, 100, percent);
   Drive.swing(45, 100, -35, 1.7);
@@ -288,7 +291,7 @@ void autolefthook(){
   Drive.moveDistance(-38, 60, .75, true);
   fireIntakeDelayed(0) ; // intake after 0.1 seconds
   Drive.moveDistance(-36, 20, 1.3, true);
-  wing1.set(false);
+  hook.set(false);
   Drive.turn(-90,85,.6); 
   hood.set(false);
   intakescoring.stop();
@@ -306,7 +309,7 @@ void autolefthook(){
 
 void autorighthook(){
   vex::task colorSortThread(colorSortTask, nullptr);
-  wing1.set(true);  
+  hook.set(true);  
   fireDropdownDelayed(650, 1000);
   fireIntakeDelayed(450);
   Drive.swing(44, 85, 40, 1.5);
@@ -331,10 +334,11 @@ void autorighthook(){
   Drive.moveDistance(-37.5, 60, .75, true);
   lilwillpiston.set(false);
   Drive.moveDistance(-36, 20, .9);
-  wing1.set(false);
+  hook.set(false);
   Drive.turn(270,85,.6); 
   Drive.moveDistance(5.25,80,.4);
   Drive.turn(190,85,.5);
+  hood.set(false);
   Drive.moveDistance(-13,50,.5,true);
   Drive.turn(155,100,10000);
   wait(15, sec);
@@ -343,7 +347,7 @@ void autorighthook(){
 void autorightsimple(){
   vex::task colorSortThread(colorSortTask, nullptr);
   // vex::task colorSortThread(colorSortTask, nullptr);
-  wing1.set(true);
+  hook.set(true);
   fireDropdownDelayed(600,2300);
   Drive.moveDistance(31.5,100,.9);
   //could cut (cut .2)
@@ -359,7 +363,7 @@ void autorightsimple(){
   intake.stop();
   hood.set(false);
   bottomintake.spin(fwd,100,pct);
-  wing1.set(false);
+  hook.set(false);
   Drive.turn(180,85,.6); 
   Drive.moveDistance(5.15,80,.4);
   Drive.turn(100,85,.5);
@@ -371,7 +375,7 @@ void autorightsimple(){
 
 void autoleftsimple(){
   vex::task colorSortThread(colorSortTask, nullptr);
-  wing1.set(true);
+  hook.set(true);
   fireDropdownDelayed(600, 100000000); // Drop after 0.75 seconds, pullback after 10 seconds
   intake.spin(forward, 100, percent);
   intakescoring.spin(fwd,50,pct);
@@ -399,43 +403,95 @@ void autoleftsimple(){
   lilwillpiston.set(false);
   Drive.moveDistance(-33, 60, .75, true);
   fireIntakeDelayed(0) ; // intake after 0.1 seconds
-  Drive.moveDistance(-36, 20, 1.3, true);
+  Drive.moveDistance(-36, 20, 1.3, true,true);
   Drive.moveDistance(10.5,50,.75);
-  Drive.moveDistance(-1000, 100, 2, true);
-
+  Drive.moveDistance(-1000, 100, 1.5, true,true);
+  Drive.swing(-20,80,90, 1);
+  fireDropdownDelayed(60, 1000000);
+  Drive.turn(0,85,.6);
+  Drive.moveDistance(12,80,.75,true);
   wait(15, sec);
 };
 
 
 void autoleftfinals(){
-  fireDropdownDelayed(725,2300);
-  Drive.moveDistance(32.7,100,1.1,true);
+  fireDropdownDelayed(725,2750);
+  Drive.moveDistance(32.2,95,1.1,true,true);
   //could cut (cut .2)
-  Drive.turn(-90,80,.6);
-  bottomintake.spin(fwd,100,pct);
-  Drive.moveDistance(30,60,.8,true);
-  Drive.turn(-92,100,.45);
-  bottomintake.spin(fwd,65,pct);
+  Drive.turn(-90,100,.6,true);
+  fireIntakeDelayed(200);
+  loadball();
+  Drive.moveDistance(30,60,.4,true);
+  loadball();
+  Drive.turn(-91,100,.5);
+  bottomintake.spin(fwd,60,pct);
   hood.set(true);
-  fireIntakeDelayed(500);
-  Drive.moveDistance(-90,85,1.65,true);
-  intakescoring.stop();
+  fireIntakeDelayed(525);
+  Drive.moveDistance(-47,85,1.3,false,true);
+  wait(.35, sec);
+  bottomintake.stop();
+  Drive.turn(-190,100,.9,true);
+  bottomintake.spin(fwd,100,pct);
   hood.set(false);
-  bottomintake.spin(fwd,100,pct);
-  Drive.turn(-190,100,.9);
   fireDropdownDelayed(190,750);
-  Drive.swing(17,50,-225,1.4);
-  Drive.turn(-45,100,1);
-  intake.spin(reverse, 10, percent);
-  Drive.moveDistance(-17.75, 40, 1.2, true);
-  bottomintake.spin(fwd,80,pct);
+  loadball();
+  Drive.swing(17,50,-200,.8);
+  Drive.turn(-45,100,.9,true);
+  intake.spin(reverse, 3, percent);
+  Drive.moveDistance(-16.65, 85, .8, true, true);
+  bottomintake.spin(fwd,90,pct);
   intakescoring.spin(reverse, 100, percent);
-  Drive.moveDistance(-3,5,.9);
+  wait(.6,sec);
+  Drive.swing(26.25,100,85,.9);
+  hood.set(false);
+  Drive.moveDistance(11.5,50,.5,true,true);
+  Drive.turn(135,60,10000);
+  wait(15,sec);
+}
+
+void autoleftfinalsalt(){
+  fireDropdownDelayed(725,2750);
+  hook.set(true);
+  Drive.moveDistance(32.2,95,1.1,true,true);
+  //could cut (cut .2)
+  Drive.turn(-90,100,.6,true);
+  fireIntakeDelayed(200);
+  loadball();
+  Drive.moveDistance(30,60,.45);
+  loadball();
+  Drive.turn(-91,100,.4);
+  bottomintake.spin(fwd,60,pct);
   hood.set(true);
-  intake.stop();
-  Drive.swing(26,100,80,1.2);
-  Drive.moveDistance(10,50,.5,true);
-  Drive.turn(135,100,10000);
+  fireIntakeDelayed(535);
+  Drive.moveDistance(-47,80,1.3,false,true);
+  wait(.325, sec);
+  bottomintake.stop();
+  Drive.turn(-190,100,.9,true);
+  hood.set(false);
+  loadball();
+  bottomintake.spin(fwd,100,pct);
+  fireDropdownDelayed(100,750);
+  Drive.moveDistance(15,100,1.5,true,true);
+  Drive.moveDistance(-11,100,1.5,true,true);
+  Drive.turn(adjustang(65),100,.75,true);
+  bottomintake.stop();
+  hook.set(false); //7.54 sec
+  wait(.0,sec); //ADJUST TS U BUM AHHS
+  Drive.swing(22,100,110,1); 
+  Drive.turn(adjustang(90),100,.8,true);
+  hook.set(true);
+  Drive.turn(adjustang(230),100,.6,true);
+  bottomintake.spin(fwd,100,pct);
+  Drive.moveDistance(16,100,.95,true,true);
+  intake.spin(reverse, 5, percent);
+  Drive.turn(adjustang(-45),100,.8,true);
+  Drive.moveDistance(-21, 85, .9, true, true);
+  bottomintake.spin(fwd,90,pct);
+  intakescoring.spin(reverse, 100, percent);
+  wait(.6,sec);
+  hook.set(false);
+  Drive.swing(26.5,100,92.5,.9);
+  hood.set(false);
   wait(15,sec);
 }
 
@@ -447,99 +503,117 @@ void autorightfinals(){
 }
 
 void autosSkills(){
-  wing1.set(true);
+  hook.set(true);
   intakescoring.setMaxTorque(100,pct);
   fireDropdownDelayed(0, 500000);
   fireIntakeDelayed(1500); 
   loadball();
   Drive.moveDistance(30, 100, 1.5,true,true);
   Drive.turn(-90,100, 1, true);
-  Drive.moveDistance(17.5,60,1.7,true);
+  Drive.moveDistance(17.5,50,1.7);
   intakescoring.stop();
   Drive.moveDistance(-7,100,.7,true,true);
   Drive.turn(-65,100,.4);
-  Drive.moveDistance(-35,100,1.2,true,true);
+  Drive.moveDistance(-33,100,1.2,true,true);
   lilwillpiston.set(false);
-  Drive.turn(-90,85,.6,true);
-  Drive.moveDistance(-48,100,1.4,true,true);
+  Drive.turn(-90.5,85,.6,true);
+  Drive.moveDistance(-50,100,1.4,true,true);
   intake.stop();
   Drive.turn(-145,100,.5);
-  Drive.moveDistance(-17.5,100,.9,true,true);
+  Drive.moveDistance(-13,100,1.25,true,true);
   Drive.turn(-270,100,1.3,true);
   fireIntakeDelayed(400);
   hood.set(true);
   Drive.moveDistance(-26,65,.6,false,true);
-  Drive.turn(-268,100,1.35);
+  Drive.turn(-267,100,1.35);
   bottomintake.spin(fwd,100,pct);
   lilwillpiston.set(true);
-  Drive.moveDistance(23.5,100,.8,true,true);
+  Drive.moveDistance(23,100,.8,true);
   loadball();
   hood.set(false);
-  Drive.moveDistance(20,60,1,true);
-  Drive.turn(-268,100,.9);
-  bottomintake.spin(fwd,30,pct);
+  Drive.moveDistance(40,60,1,true);
+  Drive.turn(-267,100,1);
+  bottomintake.spin(fwd,10,pct);
   fireIntakeDelayed(825);
   hood.set(true);
-  Drive.moveDistance(-30, 90, 1, true, true);
+  Drive.moveDistance(-29, 100, 1, true, true);
   Drive.moveDistance(-30, 60, .5);
-  wait(.5,sec);
-  Drive.turn(-245,100,1,true);
+  wait(.6,sec);
+  Drive.turn(-245,100,1);
   lilwillpiston.set(false);
   hood.set(false);
-  Drive.swing(30,100,-200,1.5);
-  fireDropdownDelayed(400,1000);
-  Drive.moveDistance(22,100,1.5,true,true);
+  Drive.swing(30,100,-200,1);
+  fireDropdownDelayed(450,1000);
+  Drive.moveDistance(21.5,100,1.5,true,true);
   loadball();
-  fireDropdownDelayed(1500,2000);
+  fireDropdownDelayed(1500,2200);
   bottomintake.spin(fwd,100,pct);
   Drive.moveDistance(65,60,3,true,true);
-  Drive.turn(-160,100,1,true);
-  Drive.swing(-24,20,-180,1.5); //reset
-  Drive.turn(-89,100,1,true);
-  Drive.moveDistance(38.75,100,2,true,true);
+  Drive.turn(-150,100,1,true);
+  Drive.swing(-11,30,-182,1); //reset
+  Drive.moveDistance(-25,15,1);
+  Drive.turn(-90,100,1,true);
+  Drive.moveDistance(39.5,100,2,true,true);
   intake.stop();
-  Drive.turn(-225,80,.75);
+  Drive.turn(-225,80,.75,true);
   intake.spin(reverse,7.5,pct);
-  Drive.moveDistance(-14.25,60,1.5,true,true);
+  Drive.moveDistance(-14.75,60,1.5,true,true);
   bottomintake.spin(fwd,60,pct);
   intakescoring.setMaxTorque(75,pct);
   intakescoring.spin(reverse,80,pct);
   wait(500,msec);
-  intakescoring.spin(reverse,50,pct);
-  wait(1500,msec);
+  Drive.moveDistance(.5,20,.6);
+  intakescoring.setMaxTorque(75,pct);
   intakescoring.spin(reverse,30,pct);
   wait(1500,msec);
   hood.set(true);
-  fireDropdownDelayed(1000,500000);
-  Drive.moveDistance(52.8,100,2,true,true);
+  fireDropdownDelayed(800,500000);
+  Drive.moveDistance(52,100,2,true,true);
   hood.set(false);
   loadball();
   bottomintake.spin(fwd,100,pct);
   Drive.turn(adjustang(90),100,.5, true);
-  Drive.moveDistance(20,70,2.5);
+  Drive.moveDistance(20,60,2.5, true);
   Drive.moveDistance(-7,100,1, true, true);
   Drive.turn(adjustang(45),100,1, true);
-  Drive.moveDistance(-28,100,1.6, true, true);
-  Drive.turn(adjustang(90),100,1, true);
+  Drive.moveDistance(-21,90,1.6, true, true);
   lilwillpiston.set(false);
+  Drive.turn(adjustang(90),100,1, true);
   intake.stop();
-  Drive.moveDistance(-52,100,1.7,true,true);
-  Drive.turn(adjustang(135),100,.5);
+  Drive.moveDistance(-60,100,2.5,true,true);
+  Drive.turn(adjustang(135),100,1, true);
   Drive.moveDistance(-20,100,1.5,true,true);
-  Drive.turn(adjustang(-90),100,1.3);
+  Drive.turn(adjustang(-90),100,1.3, true);
   fireIntakeDelayed(400);
   hood.set(true);
-  Drive.moveDistance(-26,65,.6,false,true);
-  wait(.75,sec);
-  Drive.moveDistance(23.5,100,.8,true,true);
+  Drive.moveDistance(-26,65,.6);
+  Drive.turn(adjustang(-87),100,1.35);
+  fireDropdownDelayed(0,2500);
+  Drive.moveDistance(23.5,100,1,true);
   loadball();
   hood.set(false);
-  Drive.moveDistance(20,50,1,true);
-  Drive.turn(-90,100,.9);
-  bottomintake.spin(fwd,30,pct);
-  fireIntakeDelayed(800);
+  Drive.moveDistance(20,60,1,true);
+  Drive.turn(-89,100,.9);
+  bottomintake.spin(fwd,20,pct);
   hood.set(true);
-  Drive.moveDistance(-35, 90, 1.2,true);
+  Drive.moveDistance(-28, 100, 1.2,true,true);
+  fireIntakeDelayed(300);
+  Drive.moveDistance(-12, 60, .5,true);
+  wait(.75,sec);
+  Drive.turn(-65,100,1);
+  Drive.swing(35,100,-10,1);
+  fireDropdownDelayed(450,10000);
+  Drive.moveDistance(58,100,1.5,true,true);
+  //Drive.turn(adjustang(10),100,1,true);
+  //hood.set(false);
+  //fireDropdownDelayed(100,600);
+ // bottomintake.spin(fwd,80,pct);
+  //Drive.swing(20,100,45,1.2);
+  //intake.spin(reverse,20,pct);
+ // Drive.moveDistance(10,80,1.2,true,true);
+  //intake.spin(reverse,100,pct);
+
+
 
 //   //SCORING2
 //   //4.25 sec
@@ -639,16 +713,6 @@ void autosSkills(){
   // fireDropdownDelayed(90,1000);
   // Drive.moveDistance(45,57.5,3,true);
 
-
-
-
-
-
-
-
-
-
-  
   wait(10000, sec);
   //autoskills
 };

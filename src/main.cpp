@@ -61,7 +61,7 @@ int printoncontroller() {
     Controller1.Screen.setCursor(2, 1);
     Controller1.Screen.print("B: %.0f S: %.0f", bottom_temp_, score_temp_);
 
-    double runtime = Brain.timer(seconds) - startTime;
+    double runtime = Brain.timer(seconds) - startTime - 5;
     Controller1.Screen.setCursor(3, 1);
     Controller1.Screen.print("(%.1f deg, %d:%02d, %d%%)", Inertial.heading(), (int)(runtime)/60, (int)(runtime) % 60, (int)Brain.Battery.capacity());
     this_thread::sleep_for(500);
@@ -156,14 +156,15 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
-  autosSkills();
-  autostest();
   autoleftfinals();
-  autorighthook(); //done tested (cm)
-  autolefthook(); //done tested (CM)
-  autorightsimple();
   solosig();
+  autoleftfinalsalt();
+  autosSkills();
+  autorighthook(); 
   autoleftsimple();
+  autostest();
+  autolefthook(); 
+  autorightsimple();
   autorightcomplex();
   autorightnine();
  
@@ -203,7 +204,7 @@ void usercontrol(void) {
   }
 
   bool winglift = false;
-  if (wing1.value()){
+  if (hook.value()){
     winglift = true;
   }
   
@@ -235,7 +236,8 @@ void usercontrol(void) {
   leftfront.setBrake(vex::brakeType::coast);
   leftmid.setBrake(vex::brakeType::coast);
   leftback.setBrake(vex::brakeType::coast);
-
+  intakescoring.setBrake(vex::brakeType::coast);
+  
   while (true) {
 
     // if (colorsortingEnabled) {
@@ -259,7 +261,7 @@ void usercontrol(void) {
     if (!parkTaskActive) {
       if (Controller1.ButtonR1.pressing()) {    
         // Only check for jams after 1000ms of running
-        if (!intakeJammed && (Brain.timer(msec) - intakeStartTime > 1000) && (Brain.timer(msec) - lastJamTime > jamDetectCooldown) && std::abs(intakebottom.velocity(vex::velocityUnits::pct)) <= 4) {
+        if (!intakeJammed && (Brain.timer(msec) - intakeStartTime > 1000) && (Brain.timer(msec) - lastJamTime > jamDetectCooldown) && std::abs(bottomintake.velocity(vex::velocityUnits::pct)) <= 4) {
           intakeJammed = true;
           lastJamTime = Brain.timer(msec);
         }
@@ -374,7 +376,7 @@ void usercontrol(void) {
     if (Controller1.ButtonY.pressing()) {
       if (!lastPressWing) {
         winglift = !winglift;
-        wing1.set(winglift);
+        hook.set(winglift);
       }
       lastPressWing = true;
     } else {
@@ -434,9 +436,8 @@ if (Controller1.ButtonB.pressing()) {
 // --- Start drive backward task with Down Arrow ---
 if (Controller1.ButtonDown.pressing()) {
   if (!lastPressDown) {
-    intaketop.spin(fwd,100,pct);
+    bottomintake.spin(fwd,100,pct);
     intakescoring.spin(reverse,50,pct);
-    intakescoring.spin(fwd,100,pct);
     lastPressDown = true;
   }
 } else {

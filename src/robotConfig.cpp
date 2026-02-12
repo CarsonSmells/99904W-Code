@@ -32,7 +32,7 @@ vex::distance RightDis = distance(PORT5);
 // PNEUMATICS 
 vex::pneumatics colorsortpiston = pneumatics(Brain.ThreeWirePort.A);
 vex::pneumatics lilwillpiston = pneumatics(Brain.ThreeWirePort.G); //good
-vex::pneumatics wing1 = pneumatics(Brain.ThreeWirePort.D); //good
+vex::pneumatics hook = pneumatics(Brain.ThreeWirePort.D); //good
 vex::pneumatics hood = pneumatics(Brain.ThreeWirePort.F); //good
 vex::pneumatics parkmech = pneumatics(Brain.ThreeWirePort.C);
 //*****************************//

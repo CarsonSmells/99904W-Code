@@ -21,7 +21,7 @@ extern vex::motor intakebottom;
 extern vex::motor intaketop;
 extern vex::motor intakescoring;
 // pneumatics
-extern vex::pneumatics wing1;
+extern vex::pneumatics hook;
 extern vex::pneumatics hood;
 extern vex::pneumatics parkmech;
 extern vex::pneumatics lilwillpiston;

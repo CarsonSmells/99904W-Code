@@ -12,6 +12,7 @@ void autosSkills();
 void autostest();
 void autoleftfinals();
 void autorightfinals();
+void autoleftfinalsalt();
 
 struct DropdownPullbackArgs {
     int dropdownWait;
