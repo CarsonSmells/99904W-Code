@@ -23,9 +23,8 @@ extern vex::motor intakescoring;
 // pneumatics
 extern vex::pneumatics hook;
 extern vex::pneumatics hood;
-extern vex::pneumatics parkmech;
 extern vex::pneumatics lilwillpiston;
-extern vex::pneumatics colorsortpiston;
+extern vex::pneumatics intakelift;
 // sensors
 /**
  * @brief the main inertial sensor for tracking the rotation of the robot

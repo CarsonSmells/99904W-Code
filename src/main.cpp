@@ -61,56 +61,11 @@ int printoncontroller() {
     Controller1.Screen.setCursor(2, 1);
     Controller1.Screen.print("B: %.0f S: %.0f", bottom_temp_, score_temp_);
 
-    double runtime = Brain.timer(seconds) - startTime - 5;
+    double runtime = Brain.timer(seconds) - startTime ;
     Controller1.Screen.setCursor(3, 1);
     Controller1.Screen.print("(%.1f deg, %d:%02d, %d%%)", Inertial.heading(), (int)(runtime)/60, (int)(runtime) % 60, (int)Brain.Battery.capacity());
     this_thread::sleep_for(500);
   }
-  return 0;
-}
-
-volatile bool parkTaskActive = false;
-volatile bool firsttime = true;
-int parkTask() {
-  parkTaskActive = true;
-
-  // Set brakes at the start
-  rightfront.setBrake(vex::brakeType::hold);
-  rightmid.setBrake(vex::brakeType::hold);
-  rightback.setBrake(vex::brakeType::hold);
-  leftfront.setBrake(vex::brakeType::hold);
-  leftmid.setBrake(vex::brakeType::hold);
-  leftback.setBrake(vex::brakeType::hold);
-  intakebottom.setBrake(vex::brakeType::hold);
-
-  while (parkTaskActive) {
-
-    if (distanceSensor.objectDistance(vex::distanceUnits::mm) <= 60 && distanceSensor.objectDistance(vex::distanceUnits::mm) >= 40 && firsttime) {
-      firsttime = false;
-      bottomintake.spinTo(bottomintake.position(deg)-92, deg, 20, vex::velocityUnits::pct, true);
-      bottomintake.stop();
-      leftdrive.stop();
-      rightdrive.stop();
-      parkmech.set(true);
-      parkTaskActive = false;
-    } else{
-      if (leftdrive.velocity(pct) < 1) {
-        firsttime = true;
-        intakescoring.spin(reverse, 100, percent);
-        bottomintake.spin(reverse, 40, percent);
-      };
-    }
-    this_thread::sleep_for(20);
-  }
-  return 0;
-}
-
-volatile bool myTaskActive = false;
-int firePistonTask() {
-  myTaskActive = true;
-  intakescoring.spin(reverse, 100, percent); 
-  wait(50, msec);
-  myTaskActive = false;
   return 0;
 }
 
@@ -121,14 +76,6 @@ int endgameAlertTask() {
   return 0;
 }
 
-volatile bool driveBackTaskActive = false;
-int drivebacktask() {
-  while (driveBackTaskActive) {
-    leftdrive.spin(reverse, 100, percent);
-    rightdrive.spin(reverse, 100, percent);
-  }
-  return 0;
-}
 
 
 /*---------------------------------------------------------------------------*/
@@ -156,10 +103,10 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
-  autoleftfinals();
   solosig();
-  autoleftfinalsalt();
   autosSkills();
+  autoleftfinalsalt();
+  autoleftfinals();
   autorighthook(); 
   autoleftsimple();
   autostest();
@@ -191,7 +138,6 @@ void usercontrol(void) {
   vex::task endgameTask(endgameAlertTask);
   vex::task tempPrintThread(printoncontroller);
   vex::task* videoThread = nullptr;
-  vex::task* driveBackThread = nullptr;
   
   if (Brain.SDcard.isInserted()) {
     videoThread = new vex::task(videoTask);
@@ -207,11 +153,6 @@ void usercontrol(void) {
   if (hook.value()){
     winglift = true;
   }
-  
-  bool colorsort = false;
-  if (colorsortpiston.value()){
-    colorsort = true;
-  }
 
   //checking hood state after auto
   bool hoodstate = false;
@@ -219,15 +160,15 @@ void usercontrol(void) {
     hoodstate = true;
   }
 
-  bool lastPressA = false;
-  bool parkmechs = false;
   bool lastPressB = false;
   bool lastPressDown = false;
   bool lastPressX = false;
   bool lastPressL2 = false;
-  bool lastPressPark = false;
   bool lastPressWing = false;
   bool midgoallast = false;
+  bool driveBackToggle = false;
+  bool reversingIntake = false;
+  int chud = 0;
 
   //set brake types for redundancy
   rightfront.setBrake(vex::brakeType::coast);
@@ -240,14 +181,7 @@ void usercontrol(void) {
   
   while (true) {
 
-    // if (colorsortingEnabled) {
-    //         // --- Color Sorting ---
-    //     if (TopOpticalSensor.color() == colorsortcolor && TopOpticalSensor.isNearObject()) {
-    //           vex::task firePistonThread(firePistonTask);
-    //         }
-    //   } else {
-    //     Controller1.rumble("-                         ");
-    //   }
+
 
     bool intakeButtonPressed = Controller1.ButtonR1.pressing() || Controller1.ButtonL1.pressing();
       if (intakeButtonPressed) {
@@ -258,7 +192,6 @@ void usercontrol(void) {
       }
 
     // --- Drive Controls ---
-    if (!parkTaskActive) {
       if (Controller1.ButtonR1.pressing()) {    
         // Only check for jams after 1000ms of running
         if (!intakeJammed && (Brain.timer(msec) - intakeStartTime > 1000) && (Brain.timer(msec) - lastJamTime > jamDetectCooldown) && std::abs(bottomintake.velocity(vex::velocityUnits::pct)) <= 4) {
@@ -280,7 +213,7 @@ void usercontrol(void) {
               slowTimer.reset();
               midgoallast = false;
             }
-          if ((!TopOpticalSensor.isNearObject() or hood.value()) && (!myTaskActive)) {
+          if ((!TopOpticalSensor.isNearObject() or hood.value())) {
             intakescoring.spin(fwd, 100, pct);
             slowTimer.reset();
 
@@ -290,11 +223,11 @@ void usercontrol(void) {
 
           } else {
             // Object detected → delayed slow
-            if (slowTimer.time(msec) <= 85 and !myTaskActive) {
+            if (slowTimer.time(msec) <= 85 ) {
               intakescoring.spin(fwd, 100, pct);
             } else {
-              intakescoring.spin(fwd, .001, pct);
-            }
+              intakescoring.spin(fwd, .0001, pct);
+            } 
           }
 
         }
@@ -327,29 +260,35 @@ void usercontrol(void) {
      
         } 
 
-      } else if (Controller1.ButtonDown.pressing()) {
-        bottomintake.spin(fwd,85,pct);
-        intakescoring.spin(reverse,35,pct);
-        slowTimer.reset();
-
-
+      } else if (Controller1.ButtonRight.pressing()) {
+        bottomintake.spin(forward, 60, percent);
+        intakescoring.spin(reverse, 30, percent);
+        midgoallast = true;
+      
       } else {
         lastIntakePressed = false;
         intakeStartTime = 0;
-        bottomintake.stop();
-        intakescoring.stop();
+        if (reversingIntake) {
+        bottomintake.spin(reverse, 40, pct);
+        if (chud - 750 <= Brain.timer(msec)) {
+          intakescoring.stop();
+        } else {
+          intakescoring.spin(reverse, 100, pct);
+        }
 
-        // if (!myTaskActive) {
-        //   bottomintake.stop();
-        // }
+        } else {
+          bottomintake.stop();
+          intakescoring.stop();
+        }
       }
-    if (!driveBackTaskActive) {
+    
+    if (!driveBackToggle) {
       float rightspeed = (Controller1.Axis2.value() * abs(Controller1.Axis2.value())) / 100;
       float leftspeed = (Controller1.Axis3.value() * abs(Controller1.Axis3.value())) / 100;
       leftdrive.spin(forward, leftspeed, percent);
       rightdrive.spin(forward, rightspeed, percent);
     }
-  }
+  
 
       //toggle for color sorting
      if (Controller1.ButtonX.pressing()) {
@@ -383,36 +322,7 @@ void usercontrol(void) {
       lastPressWing = false;
     }
 
-    // --- Toggle for parking mechanism ---
-    static vex::task* parkTaskThread = nullptr;
-    if (Controller1.ButtonRight.pressing()) {
-      if (!lastPressPark) {
-        if (parkTaskThread == nullptr) {
-          // Start the parking task
-          parkTaskThread = new vex::task(parkTask);
-          parkmechs = true;
-        } else {
-          // Stop the parking task
-          parkTaskActive = false; // Signal the task to stop
-          parkTaskThread->stop();
-          delete parkTaskThread;
-          parkTaskThread = nullptr;
-          parkmechs = false;
-          parkmech.close();
-          // Set drive and intake motors back to coast
-          rightfront.setBrake(vex::brakeType::coast);
-          rightmid.setBrake(vex::brakeType::coast);
-          rightback.setBrake(vex::brakeType::coast);
-          leftfront.setBrake(vex::brakeType::coast);
-          leftmid.setBrake(vex::brakeType::coast);
-          leftback.setBrake(vex::brakeType::coast);
-          intakebottom.setBrake(vex::brakeType::coast);
-        }
-        lastPressPark = true;
-      }
-    } else {
-      lastPressPark = false;
-    }
+
 
 if (Controller1.ButtonB.pressing()) {
       if (!lastPressB) {
@@ -424,32 +334,24 @@ if (Controller1.ButtonB.pressing()) {
       lastPressB = false;
     }
 
-    if (Controller1.ButtonA.pressing()) {
-      if (!lastPressA) {
-        colorsort = !colorsort;
-        colorsortpiston.set(colorsort);
-      }
-      lastPressA = true;
-    } else {
-      lastPressA = false;
-    }
-// --- Start drive backward task with Down Arrow ---
-if (Controller1.ButtonDown.pressing()) {
+
+// --- Toggle for drive back and reverse intake ---
+if (Controller1.ButtonA.pressing()) {
   if (!lastPressDown) {
-    bottomintake.spin(fwd,100,pct);
-    intakescoring.spin(reverse,50,pct);
+    driveBackToggle = !driveBackToggle;  // Flip the toggle
+    if (driveBackToggle) {
+      Drive.moveDistance(-1.5, 50, 1, false, true);  // Drive back
+      reversingIntake = true;
+      chud = Brain.timer(msec);
+      intakelift.set(true);
+    } else {
+      Drive.moveDistance(-4, 50, 1, false, true);  // Drive back
+      reversingIntake = false;
+      intakelift.set(false);
+    }
     lastPressDown = true;
   }
 } else {
-  // Stop drive backward when button released
-  if (driveBackThread != nullptr) {
-    driveBackTaskActive = false;
-    driveBackThread->stop();
-    delete driveBackThread;
-    driveBackThread = nullptr;
-    leftdrive.stop();
-    rightdrive.stop();
-  }
   lastPressDown = false;
 }
 

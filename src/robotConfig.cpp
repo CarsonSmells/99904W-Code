@@ -30,11 +30,10 @@ vex::distance FrontDis = distance(PORT7);
 vex::distance RightDis = distance(PORT5);
 
 // PNEUMATICS 
-vex::pneumatics colorsortpiston = pneumatics(Brain.ThreeWirePort.A);
+vex::pneumatics intakelift = pneumatics(Brain.ThreeWirePort.A); //good
 vex::pneumatics lilwillpiston = pneumatics(Brain.ThreeWirePort.G); //good
 vex::pneumatics hook = pneumatics(Brain.ThreeWirePort.D); //good
 vex::pneumatics hood = pneumatics(Brain.ThreeWirePort.F); //good
-vex::pneumatics parkmech = pneumatics(Brain.ThreeWirePort.C);
 //*****************************//
 // Robot Parameter Definitions //
 //*****************************//

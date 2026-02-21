@@ -175,7 +175,7 @@ void drivetrainObj::turn(double targetAngle, double maxSpeed, double timeout, bo
     double startTime = vex::timer::system();
     int stableCount = 0;               // counts consecutive iterations within threshold
     const int stableThreshold = 5;     // number of iterations to consider "stable"
-    const double rotationTolerance = .75; // degrees
+    const double rotationTolerance = .5; // degrees
 
     // condition exits loops after some amount of time has passed
     while (vex::timer::system() - startTime <= timeout * 1000)
