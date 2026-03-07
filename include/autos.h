@@ -2,12 +2,12 @@
 
 extern vex::color colorsortcolor;
 void solosig();
-void autorightcomplex();
-void autorightnine();
+void autorightsplit();
+void autorightseven();
 void autorighthook();
 void autolefthook();
 void autorightsimple();
-void autoleftsimple();
+void autoleftseven();
 void autosSkills();
 void autostest();
 void autoleftfinals();

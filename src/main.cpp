@@ -103,17 +103,17 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
-  solosig();
-  autosSkills();
-  autoleftfinalsalt();
+  autorightseven();
   autoleftfinals();
-  autorighthook(); 
-  autoleftsimple();
-  autostest();
+  autoleftseven();
+  autorightsplit();
   autolefthook(); 
+  autoleftfinalsalt();
+  autosSkills();
+  autorighthook(); 
+  solosig();
   autorightsimple();
-  autorightcomplex();
-  autorightnine();
+  autostest();
  
   //^^auton selector (put the code u wanna run up top.)
 }
@@ -177,7 +177,7 @@ void usercontrol(void) {
   leftfront.setBrake(vex::brakeType::coast);
   leftmid.setBrake(vex::brakeType::coast);
   leftback.setBrake(vex::brakeType::coast);
-  intakescoring.setBrake(vex::brakeType::coast);
+  intakescoring.setBrake(vex::brakeType::brake);
   
   while (true) {
 
