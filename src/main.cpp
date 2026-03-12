@@ -103,17 +103,17 @@ void pre_auton(void) {
 //option+arrows to move selection up
 void autonomous(void) {
   colorsortcolor = vex::color::green;
-  autorightseven();
+  autosSkills();
+  autoleftfinalsalt();
   autoleftfinals();
+  autostest();
+  solosig();
+  autorightseven();
   autoleftseven();
   autorightsplit();
   autolefthook(); 
-  autoleftfinalsalt();
-  autosSkills();
   autorighthook(); 
-  solosig();
   autorightsimple();
-  autostest();
  
   //^^auton selector (put the code u wanna run up top.)
 }
